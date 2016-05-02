@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>ページ内容 | サイト名</title>
+<link href="./asset/css/style.css" rel="stylesheet"> 
+</head>
+<body>
+
+<!-- Scripts Start -->
+<script type="text/javascript" src="./asset/js/jquery.js"></script>
+<script type="text/javascript" src="./asset/js/perlin.js"></script>
+<script type="text/javascript">
+
+$(function(){
+
+  var canvas,
+      ctx,
+
+      mx,
+      my,
+      radius = 0,
+
+      FPS = 1000/30;
+
+  var noiseX = 0,
+      noiseY = 0;
+      nvX = 0,
+      nvY = 0,
+
+      value = [];
+
+  function setup() {
+
+    // canvas要素追加
+    var dom = '<canvas id="cv"></canvas>';
+    $('body').append(dom);
+
+    // canvas api取得
+    canvas = document.getElementById("cv");
+    ctx = canvas.getContext("2d");   
+
+    setCanvasSize();
+
+    // noise準備
+    readyNoise();
+    nvX = Math.random() / 7;
+    nvY = Math.random() / 7;
+
+  }
+
+  function setCanvasSize() {
+    canvas.width = $(window).width();
+    canvas.height = $(window).height();
+  }
+
+  function readyNoise() {
+
+    noise.seed(Math.random());
+
+    for (var i = 0; i < 100; i++) {
+
+      value.push(noise.simplex2(i/100, i/100));
+        
+    }
+
+  }
+
+  function update() {
+
+      value.shift();
+          
+        value.push(noise.simplex2(noiseX, 0));
+
+      noiseX += nvX;
+      noiseY += nvY
+
+  }
+
+  function draw() {
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      
+      for (var i = 0; i < value.length; i++) {
+
+          ctx.beginPath();
+          ctx.moveTo(i * 10,canvas.height/2);
+          
+          ctx.lineTo(i * 10, canvas.height/2 + ((value[i] + 1)/2)*100);
+
+          ctx.closePath();
+          ctx.stroke();
+
+      }
+
+
+  }
+
+  function loop() {
+
+    update();
+    draw();
+
+  }
+
+  function loopStart() {
+
+    timer = setInterval(function(){
+
+      loop();
+
+    }, FPS);      
+
+  }
+
+  function main() {
+
+     setup();
+     loopStart();
+
+  }
+
+  main();
+
+});
+
+</script>
+</body>
+</html>
